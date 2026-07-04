@@ -22,7 +22,15 @@ export async function GET(request: Request) {
         },
       }
     )
-    await supabase.auth.exchangeCodeForSession(code)
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+    if (error) {
+      console.error('Exchange code error:', error.message)
+      return NextResponse.redirect(`${origin}/?auth_error=${encodeURIComponent(error.message)}`)
+    }
+  } else {
+    console.error('No code param received in callback')
+    return NextResponse.redirect(`${origin}/?auth_error=no_code`)
   }
 
   return NextResponse.redirect(`${origin}/`)
