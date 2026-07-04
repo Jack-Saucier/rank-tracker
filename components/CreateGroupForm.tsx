@@ -14,8 +14,9 @@ export default function CreateGroupForm({ userId }: { userId: string }) {
     e.preventDefault()
     if (!name.trim()) return
 
-    const Filter = (await import('bad-words')).default
-    const filter = new Filter()
+    const badWordsModule: any = await import('bad-words')
+    const FilterClass = badWordsModule.Filter || badWordsModule.default
+    const filter = new FilterClass()
 
     if (filter.isProfane(name)) {
       alert('Please choose an appropriate group name.')
