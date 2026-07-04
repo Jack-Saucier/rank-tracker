@@ -8,6 +8,7 @@ const GAME_OPTIONS = [
   { value: 'rocket_league', label: 'Rocket League' },
   { value: 'r6_siege', label: 'Rainbow Six Siege' },
   { value: 'fortnite', label: 'Fortnite' },
+  { value: 'overwatch', label: 'Overwatch' },
 ];
 
 export default function LinkAccountForm({ userId }: { userId: string }) {

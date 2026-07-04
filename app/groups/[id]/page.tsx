@@ -59,7 +59,7 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
   members.forEach((m: any) => usernameByUserId.set(m.user_id, m.users?.username ?? 'Unknown'));
 
   const rows = (accounts ?? []).flatMap((acc) => {
-    const playlists = ['duel', 'doubles', 'standard', 'ranked', 'battle_royale'];
+    const playlists = ['duel', 'doubles', 'standard', 'ranked', 'battle_royale', 'tank', 'damage', 'support'];
     return playlists.map((playlist) => {
       const snap = latestByAccountPlaylist.get(`${acc.id}-${playlist}`);
       return {

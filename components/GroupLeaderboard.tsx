@@ -2,18 +2,26 @@
 
 import { useState } from 'react';
 
-const GAMES: Record<string, { label: string; playlists: Record<string, string> }> = {
+const GAMES: Record<string, { label: string; playlists: Record<string, string>; statLabel: string }> = {
   rocket_league: {
     label: 'Rocket League',
     playlists: { duel: '1v1 Duel', doubles: '2v2 Doubles', standard: '3v3 Standard' },
+    statLabel: 'MMR',
   },
   r6_siege: {
     label: 'Rainbow Six Siege',
     playlists: { ranked: 'Ranked' },
+    statLabel: 'MMR',
   },
   fortnite: {
     label: 'Fortnite',
     playlists: { battle_royale: 'Battle Royale' },
+    statLabel: 'Wins',
+  },
+  overwatch: {
+    label: 'Overwatch',
+    playlists: { tank: 'Tank', damage: 'Damage', support: 'Support' },
+    statLabel: 'Rank',
   },
 };
 
@@ -78,7 +86,7 @@ export default function GroupLeaderboard({ rows }: { rows: Row[] }) {
               <th>Player</th>
               <th>Account</th>
               <th>Tier</th>
-              <th>MMR</th>
+              <th>{gameConfig.statLabel}</th>
             </tr>
           </thead>
           <tbody>

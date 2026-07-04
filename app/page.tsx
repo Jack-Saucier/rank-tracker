@@ -52,21 +52,20 @@ export default async function Home() {
             <span className="step-number">01</span>
             <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Sign in</h3>
             <p className="subtitle" style={{ fontSize: '15px', margin: 0 }}>
-              Log in with Google — no new password to remember.
+              log in with Google
             </p>
           </div>
           <div className="card step">
             <span className="step-number">02</span>
             <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Link your account</h3>
             <p className="subtitle" style={{ fontSize: '15px', margin: 0 }}>
-              Connect your Rocket League account — ranks are pulled automatically, never typed in by hand.
-            </p>
+              ranks are pulled automatically, just enter your platform, game, and display name            </p>
           </div>
           <div className="card step">
             <span className="step-number">03</span>
             <h3 style={{ fontSize: '18px', marginBottom: '8px' }}>Join a group</h3>
             <p className="subtitle" style={{ fontSize: '15px', margin: 0 }}>
-              Create or join a group with an invite code, and see how you stack up.
+              create or join a group with an invite code. are you better?
             </p>
           </div>
         </div>
