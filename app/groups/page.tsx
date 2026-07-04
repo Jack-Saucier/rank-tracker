@@ -3,6 +3,8 @@ import CreateGroupForm from '@/components/CreateGroupForm';
 import JoinGroupForm from '@/components/JoinGroupForm';
 import LinkAccountForm from '@/components/LinkAccountForm';
 import Link from 'next/link';
+import BackButton from '@/components/BackButton';
+import SiteHeader from '@/components/SiteHeader';
 
 export default async function GroupsPage() {
   const supabase = await createClient();
@@ -11,6 +13,8 @@ export default async function GroupsPage() {
   if (!user) {
     return (
       <main>
+        <SiteHeader />
+        <BackButton />
         <p className="subtitle">Please sign in to view your groups.</p>
       </main>
     );
@@ -23,6 +27,8 @@ export default async function GroupsPage() {
 
   return (
     <main>
+      <SiteHeader />
+      <BackButton />
       <h1 style={{ fontSize: '36px', marginBottom: '8px' }}>your groups</h1>
       <p className="subtitle" style={{ marginBottom: '40px' }}>
         Create a group, share the invite code, and see who's climbing.

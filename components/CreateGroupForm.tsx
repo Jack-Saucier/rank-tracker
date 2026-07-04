@@ -13,6 +13,15 @@ export default function CreateGroupForm({ userId }: { userId: string }) {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim()) return
+
+    const Filter = (await import('bad-words')).default
+    const filter = new Filter()
+
+    if (filter.isProfane(name)) {
+      alert('Please choose an appropriate group name.')
+      return
+    }
+
     setLoading(true)
 
     const { data: group, error } = await supabase

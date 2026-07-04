@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import GroupLeaderboard from '@/components/GroupLeaderboard';
+import BackButton from '@/components/BackButton';
+import SiteHeader from '@/components/SiteHeader';
+
 
 export default async function GroupPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -13,7 +16,15 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
     .single();
 
   if (!group) {
-    return <main><p>Group not found.</p></main>;
+    if (!group) {
+    return (
+      <main>
+        <SiteHeader />
+        <BackButton />
+        <p>Group not found.</p>
+      </main>
+    );
+  }
   }
 
   const { data: members } = await supabase
@@ -24,6 +35,8 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
   if (!members || members.length === 0) {
     return (
       <main>
+        <SiteHeader />
+        <BackButton />
         <h1>{group.name}</h1>
         <p>No members yet.</p>
       </main>
@@ -34,7 +47,7 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
 
   const { data: accounts } = await supabase
     .from('game_accounts')
-    .select('id, user_id, game, platform, platform_username')
+    .select('id, user_id, game, platform, platform_username, added_at')
     .in('user_id', userIds);
 
   const accountIds = accounts?.map((a) => a.id) ?? [];
@@ -57,8 +70,17 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
 
   const usernameByUserId = new Map<string, string>();
   members.forEach((m: any) => usernameByUserId.set(m.user_id, m.users?.username ?? 'Unknown'));
-
-  const rows = (accounts ?? []).flatMap((acc) => {
+  // Keep only one account per (user, game) — the earliest linked one
+  const seenUserGame = new Set<string>();
+  const dedupedAccounts = (accounts ?? [])
+    .sort((a: any, b: any) => new Date(a.added_at ?? 0).getTime() - new Date(b.added_at ?? 0).getTime())
+    .filter((acc: any) => {
+      const key = `${acc.user_id}-${acc.game}`;
+      if (seenUserGame.has(key)) return false;
+      seenUserGame.add(key);
+      return true;
+    });
+  const rows = dedupedAccounts.flatMap((acc) => {
     const playlists = ['duel', 'doubles', 'standard', 'ranked', 'battle_royale', 'tank', 'damage', 'support'];
     return playlists.map((playlist) => {
       const snap = latestByAccountPlaylist.get(`${acc.id}-${playlist}`);
@@ -76,7 +98,8 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
 
   return (
     <main>
-      <Link href="/groups" style={{ fontSize: '14px' }}>← back to groups</Link>
+      <SiteHeader />
+      <BackButton />
       <h1 style={{ fontSize: '36px', margin: '16px 0 4px' }}>{group.name}</h1>
       <span className="invite-chip">invite code: {group.invite_code}</span>
 

@@ -2,6 +2,8 @@ import GoogleSignInButton from '@/components/GoogleSignInButton';
 import SignOutButton from '@/components/SignOutButton';
 import CrownIcon from '@/components/CrownIcon';
 import { createClient } from '@/lib/supabase/server';
+import SiteHeader from '@/components/SiteHeader';
+import { RocketLeagueIcon, FortniteIcon, OverwatchIcon, R6Icon } from '@/components/GameIcons';
 
 export default async function Home() {
   const supabase = await createClient();
@@ -9,10 +11,7 @@ export default async function Home() {
 
   return (
     <main>
-      <div className="logo">
-        <span className="logo-crown"><CrownIcon /></span>
-        trackd
-      </div>
+      <SiteHeader />
 
       <section className="hero">
         <div className="hero-copy">
@@ -22,7 +21,7 @@ export default async function Home() {
           </h1>
 
           <p className="subtitle">
-            Compare your in-game ranks with friends, classmates, and family. No manual entry — just real ranks, tracked automatically.
+            compare your in-game ranks with friends, classmates, and family.  just sign in and find out if you're the best. 
           </p>
 
           {user ? (
@@ -67,6 +66,28 @@ export default async function Home() {
             <p className="subtitle" style={{ fontSize: '15px', margin: 0 }}>
               create or join a group with an invite code. are you better?
             </p>
+          </div>
+        </div>
+      </section>
+      <section className="games-section">
+        <h2 style={{ fontSize: '28px', marginBottom: '8px' }}>track your rank in</h2>
+        <p className="subtitle" style={{ marginBottom: '32px' }}>More games coming as we add support.</p>
+        <div className="games-grid">
+          <div className="card game-card">
+            <RocketLeagueIcon />
+            <span>Rocket League</span>
+          </div>
+          <div className="card game-card">
+            <FortniteIcon />
+            <span>Fortnite</span>
+          </div>
+          <div className="card game-card">
+            <OverwatchIcon />
+            <span>Overwatch</span>
+          </div>
+          <div className="card game-card">
+            <R6Icon />
+            <span>Rainbow Six Siege</span>
           </div>
         </div>
       </section>
