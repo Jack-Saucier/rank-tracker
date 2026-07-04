@@ -4,7 +4,14 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
+const GAME_OPTIONS = [
+  { value: 'rocket_league', label: 'Rocket League' },
+  { value: 'r6_siege', label: 'Rainbow Six Siege' },
+  { value: 'fortnite', label: 'Fortnite' },
+];
+
 export default function LinkAccountForm({ userId }: { userId: string }) {
+  const [game, setGame] = useState('rocket_league')
   const [platform, setPlatform] = useState('steam')
   const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(false)
@@ -20,6 +27,7 @@ export default function LinkAccountForm({ userId }: { userId: string }) {
       .from('game_accounts')
       .insert({
         user_id: userId,
+        game,
         platform,
         platform_username: username.trim(),
       })
@@ -37,6 +45,11 @@ export default function LinkAccountForm({ userId }: { userId: string }) {
 
   return (
     <form onSubmit={handleLink}>
+      <select value={game} onChange={(e) => setGame(e.target.value)}>
+        {GAME_OPTIONS.map((g) => (
+          <option key={g.value} value={g.value}>{g.label}</option>
+        ))}
+      </select>
       <select value={platform} onChange={(e) => setPlatform(e.target.value)}>
         <option value="steam">Steam</option>
         <option value="epic">Epic</option>

@@ -14,24 +14,49 @@ const PLAYLIST_MAP: Record<string, 'duel' | 'doubles' | 'standard'> = {
   'Ranked Standard 3v3': 'standard',
 };
 
+async function fetchFortniteWins(displayName: string): Promise<number | null> {
+  const accountRes = await fetch(
+    `https://prod.api-fortnite.com/api/v1/account/displayName/${encodeURIComponent(displayName)}`,
+    { headers: { 'x-api-key': process.env.FORTNITE_API_KEY! } }
+  );
+  if (!accountRes.ok) return null;
+  const accountData = await accountRes.json();
+
+  const statsRes = await fetch(
+    `https://prod.api-fortnite.com/api/v2/stats/${accountData.id}`,
+    { headers: { 'x-api-key': process.env.FORTNITE_API_KEY! } }
+  );
+  if (!statsRes.ok) return null;
+  const statsData = await statsRes.json();
+
+  const stats = statsData.stats ?? {};
+  let totalWins = 0;
+  for (const key in stats) {
+    if (key.includes('placetop1')) {
+      totalWins += stats[key];
+    }
+  }
+  return totalWins;
+}
+
 export async function GET(request: Request) {
-  // Protect this endpoint so only Vercel's cron scheduler (or you, manually) can trigger it
   const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const supabase = createAdminClient();
+  const results = [];
 
+  // --- Rocket League ---
   const { data: accounts, error } = await supabase
     .from('game_accounts')
-    .select('id, platform, platform_username');
+    .select('id, platform, platform_username')
+    .eq('game', 'rocket_league');
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-
-  const results = [];
 
   for (const account of accounts ?? []) {
     const apiPlatform = PLATFORM_MAP[account.platform];
@@ -85,6 +110,41 @@ export async function GET(request: Request) {
       }
 
       results.push({ account: account.id, status: 'success', playlists: snapshotsToInsert.length });
+    } catch (err: any) {
+      results.push({ account: account.id, status: 'error', reason: err.message });
+    }
+  }
+
+  // --- Fortnite ---
+  const { data: fortniteAccounts } = await supabase
+    .from('game_accounts')
+    .select('id, platform_username')
+    .eq('game', 'fortnite');
+
+  for (const account of fortniteAccounts ?? []) {
+    try {
+      const wins = await fetchFortniteWins(account.platform_username);
+
+      if (wins === null) {
+        results.push({ account: account.id, status: 'error', reason: 'lookup failed' });
+        continue;
+      }
+
+      const { error: insertError } = await supabase
+        .from('rank_snapshots')
+        .insert({
+          game_account_id: account.id,
+          playlist: 'battle_royale',
+          rank_tier: `${wins} wins`,
+          mmr: wins,
+        });
+
+      if (insertError) {
+        results.push({ account: account.id, status: 'error', reason: insertError.message });
+        continue;
+      }
+
+      results.push({ account: account.id, status: 'success', wins });
     } catch (err: any) {
       results.push({ account: account.id, status: 'error', reason: err.message });
     }

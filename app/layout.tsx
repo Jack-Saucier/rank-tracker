@@ -1,12 +1,14 @@
+import './globals.css';
+
 export const metadata = {
-  title: "Rank Tracker",
-  description: "Track your rank against your peers",
+  title: "trackd",
+  description: "Compare your in-game ranks with friends, classmates, and family.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body style={{ fontFamily: "system-ui, sans-serif", margin: 0, padding: "2rem" }}>
+      <body>
         {children}
       </body>
     </html>

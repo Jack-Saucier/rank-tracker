@@ -16,7 +16,7 @@ export default function GoogleSignInButton() {
 
   return (
     <button onClick={handleSignIn}>
-      Sign in with Google
+      are you better?
     </button>
   )
 }

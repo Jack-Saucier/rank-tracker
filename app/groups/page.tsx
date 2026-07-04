@@ -1,7 +1,7 @@
-import LinkAccountForm from '@/components/LinkAccountForm';
 import { createClient } from '@/lib/supabase/server';
 import CreateGroupForm from '@/components/CreateGroupForm';
 import JoinGroupForm from '@/components/JoinGroupForm';
+import LinkAccountForm from '@/components/LinkAccountForm';
 import Link from 'next/link';
 
 export default async function GroupsPage() {
@@ -9,7 +9,11 @@ export default async function GroupsPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    return <main><p>Please sign in to view your groups.</p></main>;
+    return (
+      <main>
+        <p className="subtitle">Please sign in to view your groups.</p>
+      </main>
+    );
   }
 
   const { data: memberships } = await supabase
@@ -19,24 +23,43 @@ export default async function GroupsPage() {
 
   return (
     <main>
-      <h1>Your Groups</h1>
-      <h2>Link a Game Account</h2>
-      <LinkAccountForm userId={user.id} />
+      <h1 style={{ fontSize: '36px', marginBottom: '8px' }}>your groups</h1>
+      <p className="subtitle" style={{ marginBottom: '40px' }}>
+        Create a group, share the invite code, and see who's climbing.
+      </p>
 
-      <ul>
-        {memberships?.map((m: any) => (
-          <li key={m.groups.id}>
-            <Link href={`/groups/${m.groups.id}`}>{m.groups.name}</Link>
-            {' '}(invite code: {m.groups.invite_code})
-          </li>
-        ))}
-      </ul>
+      {memberships && memberships.length > 0 ? (
+        <div style={{ display: 'grid', gap: '16px', marginBottom: '40px' }}>
+          {memberships.map((m: any) => (
+            <Link key={m.groups.id} href={`/groups/${m.groups.id}`} style={{ textDecoration: 'none' }}>
+              <div className="card group-card">
+                <div>
+                  <h3 style={{ fontSize: '20px', marginBottom: '4px' }}>{m.groups.name}</h3>
+                  <span className="invite-chip">code: {m.groups.invite_code}</span>
+                </div>
+                <span className="gradient-text" style={{ fontFamily: "'Baloo 2', sans-serif", fontSize: '20px' }}>→</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <p className="subtitle" style={{ marginBottom: '40px' }}>You're not in any groups yet — create or join one below.</p>
+      )}
 
-      <h2>Create a new group</h2>
-      <CreateGroupForm userId={user.id} />
+      <div className="card">
+        <h2 style={{ fontSize: '20px', marginBottom: '16px' }}>create a new group</h2>
+        <CreateGroupForm userId={user.id} />
+      </div>
 
-      <h2>Join a group</h2>
-      <JoinGroupForm userId={user.id} />
+      <div className="card">
+        <h2 style={{ fontSize: '20px', marginBottom: '16px' }}>join a group</h2>
+        <JoinGroupForm userId={user.id} />
+      </div>
+
+      <div className="card">
+        <h2 style={{ fontSize: '20px', marginBottom: '16px' }}>link a game account</h2>
+        <LinkAccountForm userId={user.id} />
+      </div>
     </main>
   );
 }
