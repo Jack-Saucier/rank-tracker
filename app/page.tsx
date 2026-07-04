@@ -1,9 +1,26 @@
-export default function Home() {
+import GoogleSignInButton from '@/components/GoogleSignInButton';
+import SignOutButton from '@/components/SignOutButton';
+import { createClient } from '@/lib/supabase/server';
+
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <main>
-      <h1>🏆 Rank Tracker</h1>
-      <p>If you can see this page live on the internet, step 1 is done.</p>
-      <p>Next up: login, groups, and pulling real ranks from the game API.</p>
+      <h1>Rank Tracker</h1>
+      {user ? (
+        <>
+          <p>Signed in as {user.email}</p>
+          <SignOutButton />
+          <p><a href="/groups">Go to your groups →</a></p>
+        </>
+      ) : (
+        <>
+          <p>Not signed in.</p>
+          <GoogleSignInButton />
+        </>
+      )}
     </main>
   );
 }
