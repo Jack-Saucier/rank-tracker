@@ -388,3 +388,16 @@ form {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+.update-timer {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #10142e;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  z-index: 10;
+}

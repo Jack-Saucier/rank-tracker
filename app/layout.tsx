@@ -1,4 +1,5 @@
 import './globals.css';
+import NextUpdateTimer from '@/components/NextUpdateTimer';
 
 export const metadata = {
   title: "trackd",
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   	<div className="bg-shape bg-shape-4"></div>
   	<div className="bg-shape bg-shape-5"></div>
   	<div className="bg-shape bg-shape-6"></div>
+        <NextUpdateTimer />
   	{children}
       </body>
     </html>

@@ -24,7 +24,7 @@ export default function LinkAccountForm({ userId }: { userId: string }) {
     if (!username.trim()) return
     setLoading(true)
 
-    const { error } = await supabase
+    const { data: newAccount, error } = await supabase
       .from('game_accounts')
       .insert({
         user_id: userId,
@@ -32,12 +32,21 @@ export default function LinkAccountForm({ userId }: { userId: string }) {
         platform,
         platform_username: username.trim(),
       })
+      .select()
+      .single()
 
     if (error) {
       alert('Error linking account: ' + error.message)
       setLoading(false)
       return
     }
+
+    // Fetch their rank immediately instead of waiting for the next scheduled run
+    await fetch('/api/rank/refresh', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ accountId: newAccount.id }),
+    })
 
     setLoading(false)
     setUsername('')
