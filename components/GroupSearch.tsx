@@ -5,6 +5,7 @@ import { useState } from 'react'
 type GroupResult = {
   id: string
   name: string
+  group_members: { count: number }[]
 }
 
 export default function GroupSearch({ userId }: { userId: string }) {
@@ -23,12 +24,12 @@ export default function GroupSearch({ userId }: { userId: string }) {
     setLoading(true)
     const { data, error } = await supabase
       .from('groups')
-      .select('id, name')
+      .select('id, name, group_members(count)')
       .eq('is_public', true)
       .ilike('name', `%${value}%`)
       .limit(20)
 
-    if (!error && data) setResults(data)
+    if (!error && data) setResults(data as unknown as GroupResult[])
     setLoading(false)
   }
 
@@ -71,35 +72,43 @@ export default function GroupSearch({ userId }: { userId: string }) {
       )}
 
       <ul style={{ marginTop: '12px', listStyle: 'none', padding: 0 }}>
-        {results.map((group) => (
-          <li
-            key={group.id}
-            style={{
-              padding: '10px 14px',
-              borderRadius: '8px',
-              background: 'rgba(255,255,255,0.05)',
-              marginBottom: '8px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <span>{group.name}</span>
-            <button
-              onClick={() => handleJoin(group.id)}
-              disabled={joiningId === group.id}
+        {results.map((group) => {
+          const memberCount = group.group_members?.[0]?.count ?? 0
+          return (
+            <li
+              key={group.id}
               style={{
-                background: 'none',
-                border: 'none',
-                color: '#FF3B5C',
-                fontWeight: 600,
-                cursor: 'pointer',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                background: 'rgba(255,255,255,0.05)',
+                marginBottom: '8px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
               }}
             >
-              {joiningId === group.id ? 'Joining...' : 'Join'}
-            </button>
-          </li>
-        ))}
+              <div>
+                <div>{group.name}</div>
+                <div style={{ fontSize: '13px', opacity: 0.6 }}>
+                  {memberCount} {memberCount === 1 ? 'member' : 'members'}
+                </div>
+              </div>
+              <button
+                onClick={() => handleJoin(group.id)}
+                disabled={joiningId === group.id}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#FF3B5C',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                {joiningId === group.id ? 'Joining...' : 'Join'}
+              </button>
+            </li>
+          )
+        })}
       </ul>
     </div>
   )
