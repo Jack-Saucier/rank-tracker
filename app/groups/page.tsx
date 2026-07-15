@@ -5,6 +5,7 @@ import LinkAccountForm from '@/components/LinkAccountForm';
 import Link from 'next/link';
 import BackButton from '@/components/BackButton';
 import SiteHeader from '@/components/SiteHeader';
+import GroupSearch from '@/components/GroupSearch';
 
 export default async function GroupsPage() {
   const supabase = await createClient();
@@ -56,7 +57,18 @@ export default async function GroupsPage() {
         <h2 style={{ fontSize: '20px', marginBottom: '16px' }}>create a new group</h2>
         <CreateGroupForm userId={user.id} />
       </div>
-
+      <div className="card">
+        <h2 style={{ fontSize: '20px', marginBottom: '16px' }}>join a group</h2>
+        <JoinGroupForm userId={user.id} />
+      </div>
+      <div className="card">
+        <h2 style={{ fontSize: '20px', marginBottom: '16px' }}>find a public group</h2>
+        <GroupSearch userId={user.id} />
+      </div>
+      <div className="card">
+        <h2 style={{ fontSize: '20px', marginBottom: '16px' }}>link a game account</h2>
+        <LinkAccountForm userId={user.id} />
+      </div>
       <div className="card">
         <h2 style={{ fontSize: '20px', marginBottom: '16px' }}>join a group</h2>
         <JoinGroupForm userId={user.id} />
